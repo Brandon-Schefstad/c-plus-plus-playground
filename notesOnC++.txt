@@ -1,0 +1,21 @@
+Strings are indexed at [0], and they can be overwritten if not const. 
+Arrays can hold many different types of data
+c++ supports ternaries
+
+class - inheritance
+struct - grouping of data
+
+declaring return values for functions is a tough nut to crack 
+
+wanted to construct rooms with specific properties 
+' vs " makes a huge difference!
+
+initializing an array on a class
+
+deriving a subclass 
+  + Public keyword important
+
+cout:
+  returns similar error to [Object,Object], have to specify property for cout
+
+Always check if theres a library for the function (Went 4 hours without looking up array)

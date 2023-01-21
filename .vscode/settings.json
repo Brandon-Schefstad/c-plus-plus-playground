@@ -1,0 +1,13 @@
+{
+	"files.associations": {
+		"*.js": "javascript",
+		"ostream": "cpp",
+		"cmath": "cpp",
+		"iostream": "cpp",
+		"cstdlib": "cpp",
+		"xstring": "cpp",
+		"array": "cpp",
+		"initializer_list": "cpp",
+		"xutility": "cpp"
+	}
+}
