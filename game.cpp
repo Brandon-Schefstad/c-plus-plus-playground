@@ -3,6 +3,7 @@
 2. Determine win condition flags
 4. Add this_thread::sleep_for(std::chrono::milliseconds(100)) to reduce speed of text render
 */
+
 #include <iostream>
 #include <cstdlib>
 #include <string.h>
@@ -25,15 +26,12 @@ class Room {
   };
 };
 
-// Please come refactor this later Brandon, can you dynamically check a public class for coordinates and return the name of the room?
-// for some reason, I cannot set a string in a derived class
-
-Room getCurrentRoom(int coordinates[2], Room southWest, Room west,Room South, Room Center,  Room SouthEast, Room East){
+Room getCurrentRoom(int coordinates[2], Room SouthWest, Room West,Room South, Room Center,  Room SouthEast, Room East){
   if (coordinates[0] == 0 && coordinates[1]==0){
-    return southWest;
+    return SouthWest;
   }
   else if (coordinates[0] == 0 && coordinates[1]==1){
-    return west;
+    return West;
   }
   else if (coordinates[0] == 1 && coordinates[1]==0)
   {
@@ -54,51 +52,63 @@ Room getCurrentRoom(int coordinates[2], Room southWest, Room west,Room South, Ro
 
 
 // Gets user actions within the room 
-vector<bool> getUserInput(Room currentRoom, Room SouthWest){
-  bool hasKey;
-  bool hasSeenGhost;
+vector<bool> getUserInput(Room currentRoom, Room SouthWest, bool hasKey, bool hasSeenGhost, bool hasUnlockedSafe, bool hasLostAmulet){
+  bool hasKeyTemp;
+  bool hasSeenGhostTemp;
+  bool hasUnlockedSafeTemp = false;
+  bool hasLostAmuletTemp;
+
   cout << "\n- - - - - - - - - - - - - - -" << endl;
-  cout << "Where do you look? Options are: \n" << endl;
+  cout << "Where do you look? Options are:" << endl;
   for(int i = 0; i < currentRoom.vantages.size() ; i++){
-    cout << "-  " << currentRoom.vantages[i] << endl;
+    cout << " | " << currentRoom.vantages[i]; 
   };
-  cout << "\nYou may also 'Leave' \n"<< endl;
-  cout << "~ ########################## ~\n" << endl;
   string userInput;
+  cout << "\nChoose a direction to look, or type 'Leave': ";
   cin >> userInput;
+  cout << "\n. . .\n" << endl;
   if(userInput.compare("Leave") == 0){
-      hasKey = hasKey;
-      return {false, hasKey};
-  }else if(userInput.compare("Left")==0){
-    if(currentRoom.roomName.compare("Foyer")==0){
-      hasKey = true;
-      cout << hasKey <<endl;
+    cout << hasKeyTemp << endl;
+    return {false, hasKeyTemp, hasSeenGhostTemp, hasUnlockedSafeTemp, hasLostAmuletTemp};
+  }else if(userInput.compare("Left") == 0){
+    if(currentRoom.roomName.compare("Foyer") == 0){
+      hasKeyTemp = true;
     }
-    cout << "Looking " << userInput << " ~ "  << currentRoom.observationsOfRoom[0] << endl;
-  }else if(userInput.compare("Forward")==0){
-      if(currentRoom.roomName.compare("Living Room")==0){
-      hasSeenGhost = true;
-    }
-    cout << "Looking " << userInput << " ~ "  << currentRoom.observationsOfRoom[1] << endl;
-  }else if(userInput.compare("Right")==0){
-    cout << "Looking " << userInput << " ~ "  << currentRoom.observationsOfRoom[2] << endl;
-  }
-    // Adjust win conditions here? Feels like a react component tree lol
-  else{
+    cout << currentRoom.observationsOfRoom[0] << endl;
+  }else if(userInput.compare("Forward") == 0){
+      if(currentRoom.roomName.compare("Living Room") == 0 && hasLostAmulet ){
+          cout << currentRoom.observationsOfRoom[1] << endl;
+          hasSeenGhostTemp = true;
+      }else if(currentRoom.roomName.compare("Kitchen") == 0){
+      cout << "You see a large flower-shaped amulet hanging from the cabinet. It is heavy and dingy from being abandoned. You pick up the amulet, maybe you can pawn it later.";
+      hasLostAmuletTemp = true;
+      }else{
+        cout << currentRoom.observationsOfRoom[1];
+      }
+  }else if(userInput.compare("Right") == 0){
+      if(currentRoom.roomName.compare("Master Bedroom") == 0 && hasKey){
+          cout<<"\tYou used the key on the safe, inside is a map of the house with an arrow pointing to the kitchen.\n"
+              <<"\tAnother points to the Living Room, which has a cartoonish ghost drawn over the couch. \n"; 
+            hasUnlockedSafeTemp = true;
+            return {true, hasKeyTemp, hasSeenGhostTemp, hasUnlockedSafeTemp};
+       }else{
+        cout << currentRoom.observationsOfRoom[2] << endl;
+        }}
+  else {
     cout << "~  " <<  "invalid entry!" << endl;
   };
-  return {true, hasKey, hasSeenGhost};
+  return {true, hasKeyTemp, hasSeenGhostTemp, hasUnlockedSafeTemp};
 };
 
 int main(){
-  cout << "You awake in a room, the wood floor feels warm against your head. 'How did I get here?' you wonder."<<endl;
+  cout << "\n \n You awake in a room, the wood floor feels warm against your head. 'How did I get here?' you wonder."<<endl;
   int currentRoomCoordinates[2]{0,0};
   bool winCondition = false;
   
   //  ~ Create a class for the SW Room
   Room SouthWest = Room("Foyer");
   SouthWest.observationsOfRoom = {
-    "You see a worn table, the whorls in the woodtop etched deep from years of use. On top of it lies a key, which wisdom would say must have a matching lock.",
+    "You see a worn table, the whorls in the woodtop etched deep from years of use. \nOn top of it lies a key, which wisdom would say must have a matching lock.\nYou pickup the key.",
     "You look at the old paintings of a family long gone. There is a sadness behind their eyes. ",
     "You get a glimpse of a door to your right. It matches the table so well, it may have come from the same tree"};
   //  ~ Available Directions to leave
@@ -106,64 +116,68 @@ int main(){
     
   //  ~ Create a class for the W Room
   Room West = Room("Kitchen");
-  West.observationsOfRoom = {"WEST", "WTEXT2", "WTEXT3"};
+  West.observationsOfRoom = {"The large countertop holds a recessed sink. It drips slowly, the sound echoing through the silent room.", "WTEXT2", "To your right is a pantry with old bronze handles. The sound of faint whispering can be heard coming from behind the door."};
   //  ~ Available Directions to leave}
   West.leavingOptions = {"Right", "Backward"};
 
   //  ~ Create a class for the S Room
   Room South = Room("Main Entrance");
-  South.observationsOfRoom = {"South", "STEXT2", "STEXT3"};
+  South.observationsOfRoom = {"The grandfather clock ticks loudly, but the hands don't move", "You hear scratching and scurrying from the shadows.", "The chandelier above swings gently, as if someone had just walked by."};
   //  ~ Available Directions to leave
-  South.leavingOptions = {"Backward","Left", "Right"};
+  South.leavingOptions = {"Forward","Left", "Right"};
 
   //  ~ Create a class for the Center Room
   Room Center = Room("Living Room");
-  Center.observationsOfRoom = {"Center", "CTEXT2", "CTEXT3"};
+  Center.observationsOfRoom = {"The moon shines through the broken window panes, casting eerie shadows on the walls of the living room. They take on the shape of a figure, that seems to be watching you.", "The amulet glows white-hot. From the setting of the jewelry, the sheer and silvery presence of a ghost leaps out through the window, escaping into the night.", "You look in the mirror on your right. It reflects someone who isn't you. A chill runs up your spine."};
   //  ~ Available Directions to leave
-  Center.leavingOptions = {"Left", "Forward", "Backward"};
+  Center.leavingOptions = {"Left", "Right", "Backward"};
 
   //  ~ Create a class for the SouthEast Room
-  Room SouthEast = Room("SouthEast");
-  SouthEast.observationsOfRoom = {"SouthEast", "CTEXT2", "CTEXT3"};
+  Room SouthEast = Room("Master Bedroom");
+  SouthEast.observationsOfRoom = {"The wardrobe door creaks open, revealing empty hangers. A moth flutters out and flies around your head.", "You see a safe under the desk, if only you had a key."};
   //  ~ Available Directions to leave
   SouthEast.leavingOptions = {"Left", "Forward"};
-
   //  ~ Create a class for the East Room
-  Room East = Room("East");
-  East.observationsOfRoom = {"East", "CTEXT2", "CTEXT3"};
+  Room East = Room("Attic");
+  East.observationsOfRoom = {"Dusty, cobweb-covered dolls stare out from the shadows, their eyes seeming to follow your every move.", "The attic is filled with old trunks and boxes, some of them dating back to several centuries with unknown contents inside.", "A rickety old rocking chair moves on its own, as if someone unseen is sitting in it, rocking back and forth."};
   //  ~ Available Directions to leave
-  East.leavingOptions = {"Left", "Forward", "Backward"};
+  East.leavingOptions = {"Left", "Backward"};
   Room currentRoom = getCurrentRoom(currentRoomCoordinates, SouthWest, West, South, Center,  SouthEast, East);
-
   bool hasKey = false;
   bool hasSeenGhost = false;
-
-
+  bool hasUnlockedSafe = false;
+  bool hasLostAmulet = false;
   // Operate game until win conditions have been met
   while(!winCondition){
   // Check win condition (array of booleans maybe?)
-  
   // First pass allows user to leave room without looking first. 
   bool isUserInRoom = true;
   // User explores room until "Leave" command
   while(true){
     if(isUserInRoom == true){
-      vector<bool> responseFromRoom = getUserInput(currentRoom, SouthWest);
-        cout << "In Room? " << responseFromRoom[0] << endl; 
-        isUserInRoom = responseFromRoom[0]; 
-        if (responseFromRoom[1] == true){hasKey = true;};
-        if (responseFromRoom[2] == true){hasSeenGhost = true;};;
+      vector<bool> responseFromRoom = getUserInput(currentRoom, SouthWest, hasKey, hasSeenGhost, hasUnlockedSafe, hasLostAmulet);
+      isUserInRoom = responseFromRoom[0]; 
+      if (responseFromRoom[1] == true){hasKey = true;};
+      if (responseFromRoom[2] == true){hasSeenGhost = true;};
+      if (responseFromRoom[3] == true){hasUnlockedSafe = true;};
+      if (responseFromRoom[4] == true){hasLostAmulet = true;};
     }else{
-      cout << "Exiting Room" << endl;
-      cout << "Have Key? " << hasKey << endl;
-      cout << "Seen Ghost?" << hasSeenGhost << endl;
+      bool winConditionMet = hasSeenGhost && hasUnlockedSafe;
+      cout << "Win Condition? " << winConditionMet << endl;
+      winCondition = winConditionMet;
       break;
     };
   };
+  if(winCondition){
+    cout << "You've escaped!" << endl;
+    return 0; 
+  }else{
   for(int i = 0; i < currentRoom.leavingOptions.size() ; i++){
       cout << "-  " << currentRoom.leavingOptions[i] << endl;
   };
+  cout << "\n";
   string direction;
+  cout << "Where to go: "; 
   cin >> direction;
   int yCoordinateChange = direction.compare("Forward") == 0 ? 1 : direction.compare("Backward") == 0 ? -1 : 0;
   int xCoordinateChange = direction.compare("Right") == 0 ? 1 : direction.compare("Left") == 0 ? -1 : 0;
@@ -174,12 +188,12 @@ int main(){
     currentRoomCoordinates[0] = tempXCoordinate;
     currentRoomCoordinates[1] = tempYCoordinate;
     currentRoom = getCurrentRoom(currentRoomCoordinates, SouthWest, West, South, Center, SouthEast, East);
-    cout << "You are now entering the " << currentRoom.roomName << ". \n"<< endl; 
+    cout << "\t You are now entering the " << currentRoom.roomName << ". \n"<< endl; 
   } else{
     cout<<"\nYou hit a wall, ow."<<endl;
     currentRoom = currentRoom;
-    cout << "You are still in the " << currentRoom.roomName << ". \n" << endl; 
-  };
+    cout << "\t You are still in the " << currentRoom.roomName << ". \n" << endl; 
+  }};
   }
   
   return 0;
