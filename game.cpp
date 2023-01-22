@@ -1,7 +1,6 @@
 /*TODO
 4. Add this_thread::sleep_for(std::chrono::milliseconds(100)) to reduce speed of text render
 */
-
 #include <iostream>
 #include <cstdlib>
 #include <string.h>
@@ -13,9 +12,6 @@ class Room {
   public:
   string roomName;
   array<string,3> vantages{"Left","Forward","Right"};
-  /*
-    Order of Observations = {left, forward, right, [table,key,window],[locked door]}
-  */
   vector<string> observationsOfRoom;
   vector <string> leavingOptions; 
   Room(string z){
@@ -23,7 +19,7 @@ class Room {
   };
 };
 
-Room getCurrentRoom(int coordinates[2], Room Foyer, Room Kitchen,Room MainHall, Room LivingRoom,  Room MasterBedroom, Room Attic){
+Room loadCurrentRoom(int coordinates[2], Room Foyer, Room Kitchen,Room MainHall, Room LivingRoom,  Room MasterBedroom, Room Attic){
   if (coordinates[0] == 0 && coordinates[1]==0){
     return Foyer;
   }
@@ -49,7 +45,7 @@ Room getCurrentRoom(int coordinates[2], Room Foyer, Room Kitchen,Room MainHall, 
 int displayPrompts(Room currentRoom){
   cout << "\n- - - - - - - - - - - - - - -" << endl;
   cout << "Where do you look? Options are:" << endl;
-  for(int i = 0; i < currentRoom.vantages.size() ; i++){
+  for(int i = 0; i < 3 ; i++){
     cout << " | " << currentRoom.vantages[i]; 
   };
   return 0; 
@@ -99,7 +95,7 @@ vector<bool> getUserInput(Room currentRoom, Room Foyer, bool hasKey, bool hasSee
   return {true, hasKeyTemp, hasSeenGhostTemp, hasUnlockedSafeTemp};
 };
 
-void introText(){
+void displayIntroText(){
     cout 
 << "  88888b                          d888888P                     dP       .d888888        dP                              dP\n" 
 <<"d8     88    dP       dP             88                        88      d8     88        88                              88\n"                            
@@ -112,12 +108,10 @@ void introText(){
 }
 
 int main(){
-  introText();
-  int currentRoomCoordinates[2]{0,0};
-  bool winCondition = false;
+  displayIntroText();
   
   /*GAME SETUP*/
-  //  ~ Create a class for the SW Room
+  //  ~ Create a class for the Foyer
   Room Foyer = Room("Foyer");
   Foyer.observationsOfRoom = {
     "You see a worn table, the whorls in the woodtop etched deep from years of use. \nOn top of it lies a key, which wisdom would say must have a matching lock.\nYou pickup the key.",
@@ -126,48 +120,51 @@ int main(){
   //  ~ Available Directions to leave
   Foyer.leavingOptions = {"Forward","Right"};
     
-  //  ~ Create a class for the W Room
+  //  ~ Create a class for the Kitchen
   Room Kitchen = Room("Kitchen");
   Kitchen.observationsOfRoom = {"The large countertop holds a recessed sink. It drips slowly, the sound echoing through the silent room.", "You see a large flower-shaped amulet hanging from the cabinet. It is heavy and dingy from being abandoned. You pick up the amulet, maybe you can pawn it later.", "To your right is a pantry with old bronze handles. The sound of faint whispering can be heard coming from behind the door."};
   //  ~ Available Directions to leave}
   Kitchen.leavingOptions = {"Right", "Backward"};
 
-  //  ~ Create a class for the S Room
+  //  ~ Create a class for the Main Entrance
   Room MainHall = Room("Main Entrance");
   MainHall.observationsOfRoom = {"The grandfather clock ticks loudly, but the hands don't move", "You hear scratching and scurrying from the shadows.", "The chandelier above swings gently, as if someone had just walked by."};
   //  ~ Available Directions to leave
   MainHall.leavingOptions = {"Forward","Left", "Right"};
 
-  //  ~ Create a class for the LivingRoom Room
+  //  ~ Create a class for the Living Room
   Room LivingRoom = Room("Living Room");
   LivingRoom.observationsOfRoom = {"The moon shines through the broken window panes, casting eerie shadows on the walls of the living room. They take on the shape of a figure, that seems to be watching you.", "In front of you lies an incomplete set of jewelry, each representing a different type of flower.", "You look in the mirror on your right. It reflects someone who isn't you. A chill runs up your spine.",};
   //  ~ Available Directions to leave
   LivingRoom.leavingOptions = {"Left", "Right", "Backward"};
 
-  //  ~ Create a class for the MasterBedroom Room
+  //  ~ Create a class for the Master Bedroom 
   Room MasterBedroom = Room("Master Bedroom");
   MasterBedroom.observationsOfRoom = {"The wardrobe door creaks open, revealing empty hangers. A moth flutters out and flies around your head.", "You see a safe under the desk, if only you had a key."};
   //  ~ Available Directions to leave
   MasterBedroom.leavingOptions = {"Left", "Forward"};
-  //  ~ Create a class for the Attic Room
+
+  //  ~ Create a class for the Attic
   Room Attic = Room("Attic");
   Attic.observationsOfRoom = {"Dusty, cobweb-covered dolls stare out from the shadows, their eyes seeming to follow your every move.", "The attic is filled with old trunks and boxes, some of them dating back to several centuries with unknown contents inside.", "A rickety old rocking chair moves on its own, as if someone unseen is sitting in it, rocking back and forth."};
   //  ~ Available Directions to leave
   Attic.leavingOptions = {"Left", "Backward"};
-  Room currentRoom = getCurrentRoom(currentRoomCoordinates, Foyer, Kitchen, MainHall, LivingRoom,  MasterBedroom, Attic);
-
 
   /*GAME LOGIC*/
+  int currentRoomCoordinates[2]{0,0};
+  bool winCondition = false;
+  Room currentRoom = loadCurrentRoom(currentRoomCoordinates, Foyer, Kitchen, MainHall, LivingRoom,  MasterBedroom, Attic);
+
   bool hasKey = false;
   bool hasSeenGhost = false;
   bool hasUnlockedSafe = false;
   bool hasLostAmulet = false;
   // Operate game until win conditions have been met
   while(!winCondition){
-  // Check win condition (array of booleans maybe?)
-  // First pass allows user to leave room without looking first. 
+
   bool isUserInRoom = true;
   // User explores room until "Leave" command
+
   while(true){
     if(isUserInRoom == true){
       vector<bool> responseFromRoom = getUserInput(currentRoom, Foyer, hasKey, hasSeenGhost, hasUnlockedSafe, hasLostAmulet);
@@ -201,10 +198,10 @@ int main(){
   //  Check if valid coordinates
   int tempXCoordinate = currentRoomCoordinates[0] += xCoordinateChange;
   int tempYCoordinate = currentRoomCoordinates[1] += yCoordinateChange;
-  if((-1 < tempXCoordinate)  && (tempXCoordinate < 3) &&(-1<tempYCoordinate) && (tempYCoordinate < 2 )){
+  if((-1 < tempXCoordinate)  && (tempXCoordinate < 3) && (-1 < tempYCoordinate) && (tempYCoordinate < 2 )){
     currentRoomCoordinates[0] = tempXCoordinate;
     currentRoomCoordinates[1] = tempYCoordinate;
-    currentRoom = getCurrentRoom(currentRoomCoordinates, Foyer, Kitchen, MainHall, LivingRoom, MasterBedroom, Attic);
+    currentRoom = loadCurrentRoom(currentRoomCoordinates, Foyer, Kitchen, MainHall, LivingRoom, MasterBedroom, Attic);
     cout << "\nYou are now entering the " << currentRoom.roomName << ". \n"<< endl; 
   } else{
     cout<<"\nYou hit a wall, ow."<<endl;

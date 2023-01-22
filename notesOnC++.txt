@@ -16,11 +16,9 @@ deriving a subclass
   + Public keyword important
 
 cout:
-  returns similar error to [Object,Object], have to specify property for cout
+returns similar error to [Object,Object], have to specify property for cout
 
 Always check if theres a library for the function (Went 4 hours without looking up array)
-
-using sizeof to get an arrays length seems to only work on an array of integers. 
 
 I wonder how long people study C++ and use arrays before they realize about vectors
 
