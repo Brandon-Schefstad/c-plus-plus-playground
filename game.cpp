@@ -110,7 +110,7 @@ int main(){
   SouthWest.observationsOfRoom = {
     "You see a worn table, the whorls in the woodtop etched deep from years of use. \nOn top of it lies a key, which wisdom would say must have a matching lock.\nYou pickup the key.",
     "You look at the old paintings of a family long gone. There is a sadness behind their eyes. ",
-    "You get a glimpse of a door to your right. It matches the table so well, it may have come from the same tree"};
+    "You get a glimpse of a door to your right. It matches the table so well, it may have come from the same tree."};
   //  ~ Available Directions to leave
   SouthWest.leavingOptions = {"Forward","Right"};
     
