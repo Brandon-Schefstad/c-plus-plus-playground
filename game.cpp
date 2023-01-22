@@ -46,7 +46,14 @@ Room getCurrentRoom(int coordinates[2], Room Foyer, Room Kitchen,Room MainHall, 
   }
 };
 
-
+int displayPrompts(Room currentRoom){
+  cout << "\n- - - - - - - - - - - - - - -" << endl;
+  cout << "Where do you look? Options are:" << endl;
+  for(int i = 0; i < currentRoom.vantages.size() ; i++){
+    cout << " | " << currentRoom.vantages[i]; 
+  };
+  return 0; 
+}
 
 // Gets user actions within the room 
 vector<bool> getUserInput(Room currentRoom, Room Foyer, bool hasKey, bool hasSeenGhost, bool hasUnlockedSafe, bool hasLostAmulet){
@@ -54,11 +61,7 @@ vector<bool> getUserInput(Room currentRoom, Room Foyer, bool hasKey, bool hasSee
   bool hasSeenGhostTemp;
   bool hasUnlockedSafeTemp = false;
   bool hasLostAmuletTemp;
-  cout << "\n- - - - - - - - - - - - - - -" << endl;
-  cout << "Where do you look? Options are:" << endl;
-  for(int i = 0; i < currentRoom.vantages.size() ; i++){
-    cout << " | " << currentRoom.vantages[i]; 
-  };
+  displayPrompts(currentRoom);
   string userInput;
   cout << "\nChoose a direction to look, or type 'Leave': ";
   cin >> userInput;
@@ -113,6 +116,7 @@ int main(){
   int currentRoomCoordinates[2]{0,0};
   bool winCondition = false;
   
+  /*GAME SETUP*/
   //  ~ Create a class for the SW Room
   Room Foyer = Room("Foyer");
   Foyer.observationsOfRoom = {
@@ -153,10 +157,7 @@ int main(){
   Room currentRoom = getCurrentRoom(currentRoomCoordinates, Foyer, Kitchen, MainHall, LivingRoom,  MasterBedroom, Attic);
 
 
-
-
-/*Game Management*/
-
+  /*GAME LOGIC*/
   bool hasKey = false;
   bool hasSeenGhost = false;
   bool hasUnlockedSafe = false;
@@ -181,6 +182,10 @@ int main(){
     };
   };
   if(winCondition){
+    cout << "A mysterious glow envelopes you, you start floating above the ground." << endl;
+    cout << "Groups of shades and spirits appear out of the eaves and walls like liquid. They seem to be waving goodbye." << endl;
+    cout << "Everything fades to black." << endl;
+    cout << "You wake up on the lawn outside." << endl;
     cout << "You've escaped!" << endl;
     return 0; 
   }else{
