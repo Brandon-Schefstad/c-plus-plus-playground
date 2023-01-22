@@ -100,9 +100,9 @@ vector<bool> getUserInput(Room currentRoom, Room SouthWest, bool hasKey, bool ha
   return {true, hasKeyTemp, hasSeenGhostTemp, hasUnlockedSafeTemp};
 };
 
-int main(){
-  cout 
-<< "   88888b                         d888888P                     dP       .d888888        dP                              dP\n" 
+void introText(){
+    cout 
+<< "  88888b                          d888888P                     dP       .d888888        dP                              dP\n" 
 <<"d8     88    dP       dP             88                        88      d8     88        88                              88\n"                            
 << "88           88       88             88    .d8888b. dP.  .dP d8888P    88aaaaa88a .d888b88 dP   .dP .d8888b.  88d888b d8888P dP    dP 88d888b   d8888b.\n"
 << "88        88888888 88888888          88    88ooood8   8bd8     88      88     88  88    88 88   d8  88ooood8 88    88   88   88    88 88    88 88ooood8 \n"
@@ -110,6 +110,10 @@ int main(){
 <<"Y88888P     dP       dP             dP     88888P  dP    dP   dP      88     88   88888P8 8888P     88888P  dP    dP   dP    88888P  dP        88888P \n"
 << endl;
   cout << "\n \n You awake in a room, the wood floor feels warm against your head. 'How did I get here?' you wonder."<<endl;
+}
+
+int main(){
+  introText();
   int currentRoomCoordinates[2]{0,0};
   bool winCondition = false;
   
