@@ -1,6 +1,4 @@
 /*TODO
-1. Author flavor text for rooms
-2. Determine win condition flags
 4. Add this_thread::sleep_for(std::chrono::milliseconds(100)) to reduce speed of text render
 */
 
@@ -68,7 +66,6 @@ vector<bool> getUserInput(Room currentRoom, Room SouthWest, bool hasKey, bool ha
   cin >> userInput;
   cout << "\n. . .\n" << endl;
   if(userInput.compare("Leave") == 0){
-    cout << hasKeyTemp << endl;
     return {false, hasKeyTemp, hasSeenGhostTemp, hasUnlockedSafeTemp, hasLostAmuletTemp};
   }else if(userInput.compare("Left") == 0){
     if(currentRoom.roomName.compare("Foyer") == 0){
@@ -174,9 +171,7 @@ int main(){
       if (responseFromRoom[3] == true){hasUnlockedSafe = true;};
       if (responseFromRoom[4] == true){hasLostAmulet = true;};
     }else{
-      bool winConditionMet = hasSeenGhost && hasUnlockedSafe;
-      cout << "Win Condition? " << winConditionMet << endl;
-      winCondition = winConditionMet;
+      winCondition = hasSeenGhost && hasUnlockedSafe;
       break;
     };
   };
@@ -200,11 +195,11 @@ int main(){
     currentRoomCoordinates[0] = tempXCoordinate;
     currentRoomCoordinates[1] = tempYCoordinate;
     currentRoom = getCurrentRoom(currentRoomCoordinates, SouthWest, West, South, Center, SouthEast, East);
-    cout << "\t You are now entering the " << currentRoom.roomName << ". \n"<< endl; 
+    cout << "\nYou are now entering the " << currentRoom.roomName << ". \n"<< endl; 
   } else{
     cout<<"\nYou hit a wall, ow."<<endl;
     currentRoom = currentRoom;
-    cout << "\t You are still in the " << currentRoom.roomName << ". \n" << endl; 
+    cout << "\nYou are still in the " << currentRoom.roomName << ". \n" << endl; 
   }};
   }
   
